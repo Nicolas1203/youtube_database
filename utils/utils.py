@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 def json_to_df(data_dir: str, verbose: bool=False) -> pd.DataFrame:
     """
     Concatenate all json data files in the directory as a pandas dataframe.
+    USE IT FOR 2019 DATA
 
     :param verbose:     Flag for logging  useful information
     :param data_dir:         Path to the directory containing every json files
@@ -40,6 +41,10 @@ def json_to_df(data_dir: str, verbose: bool=False) -> pd.DataFrame:
 
 
 def json_to_csv(data_dir: str, out_dir:str, verbose: bool=False) -> None:
+    """
+    This function loads data from every json in data_dir and saves them as multiple csv files in out_dir.
+    USE IT FOR 2020.
+    """
     json_files = glob.glob(str(Path(data_dir) / '*.json'))
     df_all = pd.DataFrame()
     for i, file in enumerate(json_files):
@@ -74,7 +79,7 @@ def plot_graphs(
     graph_name: str=None,
     figsize=(20, 20),
     title: str=None
-    ):
+    ) -> None:
 
     # Convert to datetime
     input_data['uploaded'] = input_data['uploaded'].apply(lambda x: dt.datetime.strptime(x,'%Y-%m-%d %H:%M:%S'))
@@ -96,7 +101,10 @@ def plot_graphs(
         plt.close()
 
 
-def load_data_2020(csv_dir: str, verbose: bool=False):
+def load_data_2020(csv_dir: str, verbose: bool=False) -> pd.Dataframe:
+    """
+    Loads data from csv_dir containing multiple csv and cancatenate them in one dataframe. 
+    """
     csv_files = glob.glob(str(Path(csv_dir) / '*.csv'))
     df_all = pd.DataFrame()
 
