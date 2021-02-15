@@ -101,7 +101,7 @@ def plot_graphs(
         plt.close()
 
 
-def load_data_2020(csv_dir: str, verbose: bool=False) -> pd.Dataframe:
+def load_data_2020(csv_dir: str, verbose: bool=False) -> pd.DataFrame:
     """
     Loads data from csv_dir containing multiple csv and cancatenate them in one dataframe. 
     """
