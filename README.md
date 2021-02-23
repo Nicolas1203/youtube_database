@@ -6,6 +6,7 @@ Scripts and notebooks for exploring YT database
 	numpy
 	pandas
 	matplotlib
+    youtube-dl    
 
 # Notes
 
