@@ -35,43 +35,47 @@ import pandas as pd
 import time
 import argparse
 from pathlib import Path
-
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Youtube video download code.')
 parser.add_argument('--test-url', help='Youtube video url to test',
-					default='https://www.youtube.com/watch?v=M0r9gRrzFMQ')
+                    default='https://www.youtube.com/watch?v=M0r9gRrzFMQ')
 parser.add_argument('-t', '--test', action='store_true', help='Run script in test mode.')
 parser.add_argument('--base-url', help='Root youtube url without video id.',
-					default='https://www.youtube.com/watch?v=')
+                    default='https://www.youtube.com/watch?v=')
 parser.add_argument('--data-path', help='Path/to/data/folder',
-					default='./data_wizdeo/')
+                    default='./data_wizdeo/')
 parser.add_argument('--csv-name', help='Name of the csv containing the data.',
-					default='data_all.csv')
+                    default='data_all.csv')
 parser.add_argument('-n', '--nb-vids', type=int, help="Number of videos to download.",
-					default=2000)
+                    default=5000)
 
-args=parser.parse_args()
+args = parser.parse_args()
 
 # Define YTDL options
 opts = {
-	"format": '18'
+    "format": '18',
+    "writesubtitles": True,
+    "writeautomaticsub": True,
+    "subtitleslangs": {
+        "fr",
+    }
 }
 
 ytdl = yt.YoutubeDL(opts)
 
-if not args.test:
-	df = pd.read_csv(str(Path(args.data_path) / args.csv_name))
-	url_list = df['yt_id'].apply(lambda x: args.base_url + str(x)).iloc[0:args.nb_vids].tolist()
-	nb_unavailable = 0
-	time_start = time.time()
-	for url in url_list:
-	    try:
-	        ytdl.download([url])
-	    except Exception as e:
-	        print(f"{url} video is unavailable, skipping it")
-	        nb_unavailable += 1
-	print(f"Number of skipped videos : {nb_unavailable}")
-	print(f"Processing time {time.time() - time_start}")
+if args.test:
+    ytdl.download([args.test_url])
 else:
-
-	ytdl.download([args.test_url])
+    df = pd.read_csv(str(Path(args.data_path) / args.csv_name))
+    url_list = df['yt_id'].apply(lambda x: args.base_url + str(x)).iloc[0:args.nb_vids].tolist()
+    nb_unavailable = 0
+    time_start = time.time()
+    for url in tqdm(url_list):
+        try:
+            ytdl.download([url])
+        except Exception as e:
+            print(f"{url} video is unavailable, skipping it")
+            nb_unavailable += 1
+    print(f"Number of skipped videos : {nb_unavailable}")
+    print(f"Processing time {time.time() - time_start}")
