@@ -1,15 +1,17 @@
 """
-Utils functions for data exploration
+Utils functions for data exploration and preprocessing
 """
 import pandas as pd
 import glob
 import json
-from pathlib import Path
-from tqdm import tqdm
 import time
 import datetime as dt
 import matplotlib.pyplot as plt
-
+import os
+import random
+import shutil
+from pathlib import Path
+from tqdm import tqdm
 
 
 def json_to_df(data_dir: str, verbose: bool=False) -> pd.DataFrame:
@@ -121,3 +123,34 @@ def load_data_2020(csv_dir: str, verbose: bool=False) -> pd.DataFrame:
         df_all = pd.concat([df_all, df_temp], sort=True)
 
     return df_all
+
+
+def train_test_split(data_path, frac, seed=1):
+    """Split the data in one folder to two seperate train/test folder with frac of data in train folder.
+
+    Args:
+        data_path   (str):      Path the the folder containing all data
+        frac        (float):    Fraction of the data to take in train
+        seed        (int):      Random seed to use
+    """
+    if frac >= 1 or frac < 0:
+        Warning(f"Frac should be between [0,1). Got {frac}")
+    random.seed(seed)
+    
+    data_list = [f for f in glob.glob(data_path + '/*') if os.path.isfile(f)]
+    random.shuffle(data_list)
+    sep = int(len(data_list) * frac)
+    train_data, test_data = data_list[:sep], data_list[sep:]
+
+    data_path_train = data_path + "/train/"
+    data_path_test = data_path + "/test/"
+
+    if not os.path.exists(data_path_train):
+        os.mkdir(data_path_train)
+    if not os.path.exists(data_path_test):
+        os.mkdir(data_path_test)
+    
+    for f in train_data:
+        shutil.move(f, data_path_train + os.path.basename(f))
+    for f in test_data:
+        shutil.move(f, data_path_test + os.path.basename(f))
